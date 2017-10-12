@@ -5,6 +5,9 @@ public enum SQLeleError: Error {
 
     case error(message: String, code: Int32, statement: String?)
     case noSqlInStatement(statement: String)
+    case bindParameterNotFound(name: String)
+    case columnNotFound(name: String)
+    case typeMismatch(got: Row.StorageClass)
     case outOfMemory
 
     init?(errorCode: Int32, connection: Connection, statement: String? = nil) {
@@ -15,21 +18,4 @@ public enum SQLeleError: Error {
         self = .error(message: message, code: errorCode, statement: statement)
     }
 
-}
-
-extension SQLeleError: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case let .error(message, errorCode, statement):
-            if let statement = statement {
-                return "\(message) (\(statement)) (code: \(errorCode))"
-            } else {
-                return "\(message) (code: \(errorCode))"
-            }
-        case .noSqlInStatement(let statement):
-            return "No SQL found in statement \"\(statement)\""
-        case .outOfMemory:
-            return "SQLite was unable to allocate memory"
-        }
-    }
 }

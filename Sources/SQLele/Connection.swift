@@ -50,7 +50,7 @@ public final class Connection {
         return try Statement(db: self, sql: string)
     }
 
-    func run(_ sql: String) throws {
+    public func run(_ sql: String) throws {
         try _ = prepare(sql).step()
     }
 
@@ -76,18 +76,5 @@ public final class Connection {
         }
         try self.run("COMMIT TRANSACTION")
         return ret
-    }
-}
-
-extension Connection {
-    func setUserVersion(_ version: Int) throws {
-        let s = try prepare("pragma user_version = ?").bind(values: [version])
-        _ = try s.step()
-    }
-
-    func userVersion() throws -> Int {
-        let s = try prepare("pragma user_version")
-        _ = try s.step()
-        return s[0] as! Int
     }
 }

@@ -12,17 +12,17 @@ class SQLeleTests: XCTestCase {
 
     func testBasicUsage() throws {
         try db.run("create table Test (a, b, c)")
-        try _ = db.prepare("insert into Test values (?, ?, ?)").bind(values: [1, 2, 3]).step()
+        let s = try db.prepare("insert into Test values (?, ?, ?)")
+        try s.bind(1, to: 1 as Int64?)
+        try s.bind(2, to: "foo")
+        try s.bind(3, to: 123.456)
+        _ = try s.step()
 
-        let count = try db.prepare("select count(*) from Test")
-        XCTAssertEqual(count.columnCount, 1)
-        XCTAssertEqual(try count.step(), true)
-        XCTAssertEqual(count[0] as? Int64, 1)
-
-        let s = try db.prepare("select * from Test")
-        XCTAssertEqual(s.columnCount, 3)
-        XCTAssertEqual(try s.step(), true)
-        XCTAssertEqual(s[2] as? Int64, 3)
+        let count = try db.prepare("select * from Test")
+        let row = try count.step()!
+        XCTAssertEqual(try row.column(0) as Int64?, 1)
+        XCTAssertEqual(try row.column(1) as String?, "foo")
+        XCTAssertEqual(try row.column(2) as Double?, 123.456)
     }
 
 
