@@ -10,26 +10,52 @@ class SQLeleTests: XCTestCase {
         super.setUp()
 
         db = try! Connection()
-        try! db.run("create table Test (a, b, c)")
+        try! db.run("create table Test (a, b, c, d, e)")
     }
 
     func testBasicUsage() throws {
-        let s = try db.prepare("insert into Test values (?, ?, ?)")
+        let s = try db.prepare("insert into Test values (?, ?, ?, ?, ?)")
         try s.bind(1, to: 1 as Int64?)
         try s.bind(2, to: "foo")
         try s.bind(3, to: 123.456)
+        try s.bind(4, to: Data(bytes: [0, 1, 2, 4, 8, 16]))
+
+        try s.bind(5, to: "overwrite me")
+        try s.bindNull(5)
         _ = try s.step()
 
         let select = try db.prepare("select * from Test")
         let row = try select.step()!
+
         XCTAssertEqual(try row.column(0) as Int64?, 1)
+        XCTAssertEqual(try row.column(0) as Double?, 1)
+        XCTAssertThrowsError(try row.column(0) as String?)
+        XCTAssertThrowsError(try row.column(0) as Data?)
+
+        XCTAssertThrowsError(try row.column(1) as Int64?)
+        XCTAssertThrowsError(try row.column(1) as Double?)
         XCTAssertEqual(try row.column(1) as String?, "foo")
+        XCTAssertThrowsError(try row.column(1) as Data?)
+
+        XCTAssertThrowsError(try row.column(2) as Int64?)
         XCTAssertEqual(try row.column(2) as Double?, 123.456)
+        XCTAssertThrowsError(try row.column(2) as String?)
+        XCTAssertThrowsError(try row.column(2) as Data?)
+
+        XCTAssertThrowsError(try row.column(3) as Int64?)
+        XCTAssertThrowsError(try row.column(3) as Double?)
+        XCTAssertThrowsError(try row.column(3) as String?)
+        XCTAssertEqual(try row.column(3) as Data?, Data(bytes: [0, 1, 2, 4, 8, 16]))
+
+        XCTAssertEqual(try row.column(4) as Int64?, nil)
+        XCTAssertEqual(try row.column(4) as Double?, nil)
+        XCTAssertEqual(try row.column(4) as String?, nil)
+        XCTAssertEqual(try row.column(4) as Data?, nil)
     }
 
     func testTransaction() throws {
         try db.transaction {
-            try db.run("insert into Test values (1, 2, 3)")
+            try db.run("insert into Test values (1, 2, 3, 4, 5)")
         }
         let count = try db.prepare("select count(*) from Test")
         let row = try count.step()!
@@ -39,7 +65,7 @@ class SQLeleTests: XCTestCase {
     func testTransactionRollsBackOnThrow() throws {
         do {
             try db.transaction {
-                try db.run("insert into Test values (1, 2, 3)")
+                try db.run("insert into Test values (1, 2, 3, 4, 5)")
                 throw TestError()
             }
         } catch {}
@@ -73,6 +99,7 @@ class SQLeleTests: XCTestCase {
 
     static var allTests = [
         ("testBasicUsage", testBasicUsage),
+        ("testTransaction", testTransaction),
         ("testTransactionRollsBackOnThrow", testTransactionRollsBackOnThrow),
         ("testTransactionRollsBackOnCommitError", testTransactionRollsBackOnCommitError),
     ]

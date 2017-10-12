@@ -40,7 +40,7 @@ public final class Row {
         guardOverstep()
         switch storageClass(at: index) {
         case .null: return nil
-        case .integer, .real: return sqlite3_column_int64(handle, Int32(index))
+        case .integer: return sqlite3_column_int64(handle, Int32(index))
         case let other: throw SQLeleError.typeMismatch(got: other)
         }
     }
