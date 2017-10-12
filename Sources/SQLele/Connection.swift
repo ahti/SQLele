@@ -70,11 +70,11 @@ public final class Connection {
         let ret: T
         do {
             ret = try block()
+            try self.run("COMMIT TRANSACTION")
         } catch {
             try self.run("ROLLBACK TRANSACTION")
             throw error
         }
-        try self.run("COMMIT TRANSACTION")
         return ret
     }
 }
