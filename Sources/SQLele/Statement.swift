@@ -173,7 +173,7 @@ public final class Statement {
         buf[name] = el.0
     }
 
-    private func bindParamIndex(_ name: String) throws -> Int {
+    public func bindParameterIndex(_ name: String) throws -> Int {
         guard let i = bindParameterNameMap[name] else {
             throw SQLeleError.bindParameterNotFound(name: name)
         }
@@ -218,9 +218,9 @@ public final class Statement {
         }), statement: sql)
     }
 
-    public func bindNull(_ name: String) throws { try bindNull(bindParamIndex(name)) }
-    public func bind(_ name: String, to value: Int64?) throws { try bind(bindParamIndex(name), to: value) }
-    public func bind(_ name: String, to value: Double?) throws { try bind(bindParamIndex(name), to: value) }
-    public func bind(_ name: String, to value: String?) throws { try bind(bindParamIndex(name), to: value) }
-    public func bind(_ name: String, to value: Data?) throws { try bind(bindParamIndex(name), to: value) }
+    public func bindNull(_ name: String) throws { try bindNull(bindParameterIndex(name)) }
+    public func bind(_ name: String, to value: Int64?) throws { try bind(bindParameterIndex(name), to: value) }
+    public func bind(_ name: String, to value: Double?) throws { try bind(bindParameterIndex(name), to: value) }
+    public func bind(_ name: String, to value: String?) throws { try bind(bindParameterIndex(name), to: value) }
+    public func bind(_ name: String, to value: Data?) throws { try bind(bindParameterIndex(name), to: value) }
 }
