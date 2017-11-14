@@ -1,4 +1,5 @@
 import SQLite3
+import Foundation
 
 public final class Connection {
     let handle: OpaquePointer
@@ -73,6 +74,21 @@ public final class Connection {
             try self.run("COMMIT TRANSACTION")
         } catch {
             try self.run("ROLLBACK TRANSACTION")
+            throw error
+        }
+        return ret
+    }
+
+    public func savepoint<T>(_ block: () throws -> T) throws -> T {
+        let name = UUID().uuidString
+        try self.run("SAVEPOINT '\(name)'")
+        let ret: T
+        do {
+            ret = try block()
+            try self.run("RELEASE '\(name)'")
+        } catch {
+            try self.run("ROLLBACK TO '\(name)'")
+            try self.run("RELEASE '\(name)'")
             throw error
         }
         return ret

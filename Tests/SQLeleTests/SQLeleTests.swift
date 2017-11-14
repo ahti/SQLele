@@ -97,10 +97,36 @@ class SQLeleTests: XCTestCase {
         XCTAssertEqual(try row.column(0) as Int64?, 1)
     }
 
+    func testSavepointRollbacksOnError() throws {
+        do {
+            try db.savepoint {
+                try db.run("insert into Test values (1, 2, 3, 4, 5)")
+                throw TestError()
+            }
+        } catch {}
+        let count = try db.prepare("select count(*) from Test")
+        let row = try count.step()!
+        XCTAssertEqual(try row.column(0) as Int64?, 0)
+    }
+
+    func testSavepointReleasesOnError() throws {
+        do {
+            try db.savepoint {
+                try db.run("insert into Test values (1, 2, 3, 4, 5)")
+                throw TestError()
+            }
+        } catch {}
+        // open and close a transaction, which won't work when the savepoint
+        // is not released (<=> transaction stack is non-empty)
+        XCTAssertNoThrow(try db.transaction {})
+    }
+
     static var allTests = [
         ("testBasicUsage", testBasicUsage),
         ("testTransaction", testTransaction),
         ("testTransactionRollsBackOnThrow", testTransactionRollsBackOnThrow),
         ("testTransactionRollsBackOnCommitError", testTransactionRollsBackOnCommitError),
+        ("testSavepointRollbacksOnError", testSavepointRollbacksOnError),
+        ("testSavepointReleasesOnError", testSavepointReleasesOnError),
     ]
 }
