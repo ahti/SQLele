@@ -39,14 +39,6 @@ public final class Connection {
         }
     }
 
-    @discardableResult func check(_ resultCode: Int32, statement: String? = nil) throws -> Int32 {
-        guard let error = SQLeleError(errorCode: resultCode, connection: self, statement: statement) else {
-            return resultCode
-        }
-
-        throw error
-    }
-
     public func prepare(_ string: String) throws -> Statement {
         return try Statement(db: self, sql: string)
     }
