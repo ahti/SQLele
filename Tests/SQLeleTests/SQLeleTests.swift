@@ -15,12 +15,12 @@ class SQLeleTests: XCTestCase {
 
     func testBasicUsage() throws {
         let s = try db.prepare("insert into Test values (?, ?, ?, ?, ?)")
-        try s.bind(1, to: 1 as Int64?)
-        try s.bind(2, to: "foo")
-        try s.bind(3, to: 123.456)
-        try s.bind(4, to: Data(bytes: [0, 1, 2, 4, 8, 16]))
+        try s.bind(1 as Int64, to: 1)
+        try s.bind("foo", to: 2)
+        try s.bind(123.456, to: 3)
+        try s.bind(Data(bytes: [0, 1, 2, 4, 8, 16]), to: 4)
 
-        try s.bind(5, to: "overwrite me")
+        try s.bind("overwrite me", to: 5)
         try s.bindNull(5)
         _ = try s.step()
 

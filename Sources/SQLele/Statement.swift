@@ -184,43 +184,27 @@ public final class Statement {
         try db.check(sqlite3_bind_null(handle, Int32(index)), statement: sql)
     }
 
-    public func bind(_ index: Int, to value: Int64?) throws {
-        guard let value = value else {
-            try db.check(sqlite3_bind_null(handle, Int32(index)), statement: sql)
-            return
-        }
+    public func bind(_ value: Int64, to index: Int) throws {
         try db.check(sqlite3_bind_int64(handle, Int32(index), value), statement: sql)
     }
 
-    public func bind(_ index: Int, to value: Double?) throws {
-        guard let value = value else {
-            try db.check(sqlite3_bind_null(handle, Int32(index)), statement: sql)
-            return
-        }
+    public func bind(_ value: Double, to index: Int) throws {
         try db.check(sqlite3_bind_double(handle, Int32(index), value), statement: sql)
     }
 
-    public func bind(_ index: Int, to value: String?) throws {
-        guard let value = value else {
-            try db.check(sqlite3_bind_null(handle, Int32(index)), statement: sql)
-            return
-        }
+    public func bind(_ value: String, to index: Int) throws {
         try db.check(sqlite3_bind_text(handle, Int32(index), value, -1, SQLITE_TRANSIENT), statement: sql)
     }
 
-    public func bind(_ index: Int, to value: Data?) throws {
-        guard let value = value else {
-            try db.check(sqlite3_bind_null(handle, Int32(index)), statement: sql)
-            return
-        }
+    public func bind(_ value: Data, to index: Int) throws {
         try db.check(value.withUnsafeBytes({
             sqlite3_bind_blob(handle, Int32(index), $0, Int32(value.count), SQLITE_TRANSIENT)
         }), statement: sql)
     }
 
     public func bindNull(_ name: String) throws { try bindNull(bindParameterIndex(name)) }
-    public func bind(_ name: String, to value: Int64?) throws { try bind(bindParameterIndex(name), to: value) }
-    public func bind(_ name: String, to value: Double?) throws { try bind(bindParameterIndex(name), to: value) }
-    public func bind(_ name: String, to value: String?) throws { try bind(bindParameterIndex(name), to: value) }
-    public func bind(_ name: String, to value: Data?) throws { try bind(bindParameterIndex(name), to: value) }
+    public func bind(_ value: Int64,  to name: String) throws { try bind(value, to: bindParameterIndex(name)) }
+    public func bind(_ value: Double, to name: String) throws { try bind(value, to: bindParameterIndex(name)) }
+    public func bind(_ value: String, to name: String) throws { try bind(value, to: bindParameterIndex(name)) }
+    public func bind(_ value: Data,   to name: String) throws { try bind(value, to: bindParameterIndex(name)) }
 }

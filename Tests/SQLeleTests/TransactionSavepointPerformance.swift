@@ -31,10 +31,10 @@ class TransactionSavepointPerformance: XCTestCase {
     func inner() {
         let s = try! db.prepare("insert into Test values (?, ?, ?, ?)")
         for el in [(1,2,3,4), (5,6,7,8), (0,-10,42,8), (9, 99, 999, 9999)] as [(Int64, Int64, Int64, Int64)] {
-            try! s.bind(1, to: el.0)
-            try! s.bind(2, to: el.1)
-            try! s.bind(3, to: el.2)
-            try! s.bind(4, to: el.3)
+            try! s.bind(el.0, to: 1)
+            try! s.bind(el.1, to: 2)
+            try! s.bind(el.2, to: 3)
+            try! s.bind(el.3, to: 4)
             _ = try! s.step()
             s.reset()
             s.clearBindings()
