@@ -47,7 +47,7 @@ public final class Connection {
         try _ = prepare(sql).step()
     }
 
-    public enum TransactionMode : String {
+    public enum TransactionMode: String {
         /// Defers locking the database until the first read/write executes.
         case deferred = "DEFERRED"
 

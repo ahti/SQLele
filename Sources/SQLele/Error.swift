@@ -1,7 +1,7 @@
 import SQLite3
 
 public enum SQLeleError: Error {
-    static let successCodes: Set = [SQLITE_OK, SQLITE_ROW, SQLITE_DONE]
+    fileprivate static let successCodes: Set = [SQLITE_OK, SQLITE_ROW, SQLITE_DONE]
 
     case error(message: String, code: Int32, statement: String?)
     case noSqlInStatement(statement: String)
