@@ -1,0 +1,16 @@
+on: push
+name: Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: YOCKOW/Action-setup-swift@v1.0.4
+        with:
+          swift-version: '5.1'
+      - uses: actions/checkout@v1
+      - run: swift test
