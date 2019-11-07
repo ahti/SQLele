@@ -1,4 +1,9 @@
-import SQLite3
+#if os(Linux)
+    import CSQLite
+#else
+    import SQLite3
+#endif
+
 import Foundation
 
 public final class Row {

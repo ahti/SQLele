@@ -13,4 +13,6 @@ jobs:
         with:
           swift-version: '5.1'
       - uses: actions/checkout@v1
+      - if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install libsqlite3-dev
       - run: swift test
