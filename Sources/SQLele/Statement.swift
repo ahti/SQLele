@@ -203,7 +203,7 @@ public final class Statement {
 
     public func bind(_ value: Data, to index: Int) throws {
         try db.check(value.withUnsafeBytes({
-            sqlite3_bind_blob(handle, Int32(index), $0, Int32(value.count), SQLITE_TRANSIENT)
+            sqlite3_bind_blob(handle, Int32(index), $0.baseAddress!, Int32(value.count), SQLITE_TRANSIENT)
         }), statement: sql)
     }
 
